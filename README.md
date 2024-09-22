@@ -72,13 +72,8 @@ docker run \
 - **Environment Variables**: 
   - `HTTP_USER` and `HTTP_PASS` define the username and password for the web UI.
 
-### Step 3: Access the Web Interface
 
-Once the container is running, visit `http://<docker-host>:5380` in your browser. Use the `foo/bar` credentials (or those you set via the environment variables) to log in. You will see an interface like this:
-
-![Web Interface](https://user-images.githubusercontent.com/633843/31580966-baacba62-b1a9-11e7-8439-ca1ddfe828dd.png)
-
-### Step 4: Test DNS Resolution
+### Step 3: Test DNS Resolution
 
 To verify that your `dnsmasq` server is working, run a query from another machine, replacing `<docker-host>` with the IP address or hostname of your Docker host:
 
@@ -126,45 +121,11 @@ services:
 $ docker-compose up -d
 ```
 
-3. Access the web interface at `http://<docker-host>:5380` using the credentials `foo/bar` or as configured in the environment variables.
-
-4. To stop the container, run:
+3. To stop the container, run:
 
 ```bash
 docker-compose down
 ```
-
-## Advanced Configuration (Webproc)
-
-You can use `webproc` to configure the behavior of `dnsmasq` directly from the browser. Here’s an example of the `program.toml` configuration for `webproc`:
-
-```conf
-# Program to execute (with optional Arguments). Note: the process
-# must remain in the foreground (i.e. do NOT fork/run as daemon).
-ProgramArgs = ["/usr/sbin/dnsmasq", "--no-daemon"]
-
-# Web Interface Host and Port
-Host = "0.0.0.0"
-Port = 8080
-
-# Optional authentication for Web UI
-User = "foo"
-Pass = "bar"
-
-# Log settings
-Log = "both"
-
-# Action on Process Exit
-OnExit = "ignore"
-
-# Action on Save (when saving config from the UI)
-OnSave = "restart"
-
-# Configuration files to manage from the UI
-ConfigurationFiles = ["/etc/dnsmasq.conf"]
-```
-
-You can customize the `program.toml` file to fine-tune `dnsmasq` and `webproc` behavior.
 
 ## License
 

@@ -1,29 +1,19 @@
+# Use the Go base image to build any Go dependencies you still need (if any)
 FROM golang:1.21-alpine AS builder
 LABEL maintainer="me@kewbit.org"
 
-# Install dependencies for building webproc and dnsmasq
+# Install dependencies for dnsmasq (no Web UI)
 RUN apk update \
     && apk --no-cache add git curl dnsmasq
 
-# Set the working directory for Go
-WORKDIR /app
-
-# Clone your fork of the webproc repository
-RUN git clone https://github.com/KewbitXMR/dnsmasq-web-ui.git .
-
-# Build the webproc binary from your fork
-RUN go mod tidy \
-    && go generate ./... \
-    && go build -o /usr/local/bin/webproc .
+# If there's any Go-related setup still needed for your application, add it here
+# Otherwise, you can skip this step if not required anymore
 
 # Final image
 FROM alpine:edge
 LABEL maintainer="me@kewbit.org"
 
-# Copy the webproc binary from the build stage
-COPY --from=builder /usr/local/bin/webproc /usr/local/bin/webproc
-
-# Fetch dnsmasq and configure it
+# Install dnsmasq directly in the final image
 RUN apk update \
     && apk --no-cache add dnsmasq \
     && mkdir -p /etc/default/ \
@@ -32,11 +22,8 @@ RUN apk update \
 # Copy dnsmasq configuration file
 COPY dnsmasq.conf /etc/dnsmasq.conf
 
-# Set permissions for the webproc binary
-RUN chmod +x /usr/local/bin/webproc
+# Expose port 53 for DNS queries (standard for dnsmasq)
+EXPOSE 53 53/udp
 
-# Expose the port for the web UI
-EXPOSE 8080
-
-# Run webproc with dnsmasq configuration
-ENTRYPOINT ["webproc", "--config", "/etc/dnsmasq.conf", "--", "dnsmasq", "--no-daemon"]
+# Run dnsmasq directly (without webproc or Web UI)
+ENTRYPOINT ["dnsmasq", "--no-daemon", "--conf-file=/etc/dnsmasq.conf"]
