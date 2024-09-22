@@ -22,8 +22,14 @@ RUN apk update \
 # Copy dnsmasq configuration file
 COPY dnsmasq.conf /etc/dnsmasq.conf
 
+# Copy the entrypoint.sh script into the container
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Make sure the script is executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose port 53 for DNS queries (standard for dnsmasq)
 EXPOSE 53 53/udp
 
-# Run dnsmasq directly (without webproc or Web UI)
-ENTRYPOINT ["dnsmasq", "--no-daemon", "--conf-file=/etc/dnsmasq.conf"]
+# Use entrypoint.sh as the entrypoint to handle the dnsmasq configuration dynamically
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
