@@ -92,6 +92,48 @@ Aliases:
 myhost.company has address 10.0.0.2
 ```
 
+### Docker Compose Usage
+
+You can easily set up `dnsmasq` using Docker Compose. Create a `docker-compose.yml` file with the following content:
+
+```yml
+version: '3'
+services:
+  dnsmasq:
+    image: kewbit/dnsmasq-webproc
+    container_name: dnsmasq
+    ports:
+      - "53:53/udp"
+      - "5380:8080"
+    environment:
+      HTTP_USER: foo
+      HTTP_PASS: bar
+    volumes:
+      - /opt/dnsmasq.conf:/etc/dnsmasq.conf
+    restart: always
+    logging:
+      options:
+        max-size: "100m"
+```
+
+### How to Use
+
+1. Create the `dnsmasq.conf` file as described in the **Configuration** section and place it at `/opt/dnsmasq.conf` on your host.
+
+2. Run the container using Docker Compose:
+
+```bash
+$ docker-compose up -d
+```
+
+3. Access the web interface at `http://<docker-host>:5380` using the credentials `foo/bar` or as configured in the environment variables.
+
+4. To stop the container, run:
+
+```bash
+docker-compose down
+```
+
 ## Advanced Configuration (Webproc)
 
 You can use `webproc` to configure the behavior of `dnsmasq` directly from the browser. Here’s an example of the `program.toml` configuration for `webproc`:
@@ -131,7 +173,7 @@ This project is licensed under the MIT License.
 ---
 
 **Contributors**:
-Author: `https://github.com/jpillora/webproc` (J Pillora)
-Maintainer: `https://kewbit.org` (Kewbit)
+Author: [https://github.com/jpillora/webproc](https://github.com/jpillora/webproc) (J Pillora)
+Maintainer: [https://kewbit.org](https://kewbit.org)` (Kewbit)
 
 [On Behalf of HavenoDEX]: https://hub.docker.com/u/havenodex/dnsmasq/
