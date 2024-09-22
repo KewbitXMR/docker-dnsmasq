@@ -20,7 +20,7 @@ RUN apk update \
     && echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
 
 # Copy dnsmasq configuration file
-COPY dnsmasq.conf /etc/dnsmasq.conf
+COPY --chmod=0644 dnsmasq.conf /etc/dnsmasq.conf
 
 # Copy the entrypoint.sh script into the container
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
